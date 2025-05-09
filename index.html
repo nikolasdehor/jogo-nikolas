@@ -1,0 +1,121 @@
+<!-- index.html para jogo da velha -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Velha - Nikolas</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #acb6e5);
+      margin: 0;
+    }
+    h1 {
+      color: #fff;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background-color 0.3s;
+    }
+    .cell:hover {
+      background-color: #f0f0f0;
+    }
+    #status {
+      margin-top: 20px;
+      color: #fff;
+      font-weight: bold;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #fff;
+      color: #333;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Jogo da Velha - Nikolas</h1>
+  <div id="board"></div>
+  <div id="status"></div>
+  <button onclick="resetGame()">Reiniciar</button>
+
+  <script>
+    const board = document.getElementById('board');
+    const statusDiv = document.getElementById('status');
+    let cells = Array(9).fill(null);
+    let currentPlayer = 'X';
+    let gameActive = true;
+
+    function renderBoard() {
+      board.innerHTML = '';
+      cells.forEach((cell, idx) => {
+        const div = document.createElement('div');
+        div.classList.add('cell');
+        div.textContent = cell;
+        div.addEventListener('click', () => handleClick(idx));
+        board.appendChild(div);
+      });
+    }
+
+    function handleClick(index) {
+      if (!gameActive || cells[index]) return;
+      cells[index] = currentPlayer;
+      renderBoard();
+      if (checkWinner()) {
+        statusDiv.textContent = `Jogador ${currentPlayer} venceu!`;
+        gameActive = false;
+      } else if (cells.every(cell => cell)) {
+        statusDiv.textContent = 'Empate!';
+        gameActive = false;
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      }
+    }
+
+    function checkWinner() {
+      const wins = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+      return wins.some(combo => {
+        const [a, b, c] = combo;
+        return cells[a] && cells[a] === cells[b] && cells[a] === cells[c];
+      });
+    }
+
+    function resetGame() {
+      cells = Array(9).fill(null);
+      currentPlayer = 'X';
+      gameActive = true;
+      statusDiv.textContent = '';
+      renderBoard();
+    }
+
+    renderBoard();
+  </script>
+</body>
+</html>
